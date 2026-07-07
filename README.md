@@ -81,6 +81,17 @@ export FINMIND_TOKEN=your_token   # 免費註冊：https://finmindtrade.com/
 
 單一資料源失效不會中斷分析，缺失的欄位會誠實標註、不會腦補。
 
+## 交易成本與市場規則（在地化基準）
+
+選股與回測的損益計算，交易成本與市場規則集中於 [tw-market-rules.md](twstock-screening-stocks/references/tw-market-rules.md)，作為**單一基準**（不散落魔術數字）：
+
+- **交易成本**（牌告費率為保守基準）：買進 0.1425%、賣出 0.4425%（含證交稅 0.3%），來回約 **0.585%**
+- **漲跌停 ±10%**；觸及時標註流動性風險
+- **處置股**列入警示（分盤交易／預收款券）
+- 現實性註記：手續費低消 20 元、現股當沖證交稅減半（時限性制度，使用前查證）
+
+FinMind 資料集用法見 [finmind-api-cheatsheet.md](twstock-screening-stocks/references/finmind-api-cheatsheet.md)；策略 preset 骨架見 [strategy-presets.md](twstock-screening-stocks/references/strategy-presets.md)（實際權重與門檻 v0.2 填寫）。
+
 ## Roadmap
 
 - [x] v0.1 — 基礎取資料 + 基礎選股
