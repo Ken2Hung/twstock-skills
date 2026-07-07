@@ -42,3 +42,7 @@
 | 興櫃（Emerging） | `emerging` | —（不在本專案範圍，yfinance 覆蓋不穩） |
 
 市場別以 FinMind `TaiwanStockInfo` 動態判斷，禁止硬編碼股票清單。
+
+## 5. 月營收在地註記（農曆年）
+
+台股 1、2 月營收 YoY 因**農曆年落點**（年節落在 1 月或 2 月，工作天數與出貨月份位移）常使單月數據失真。評分計算月營收 YoY 時，**1、2 月營收 MUST 合併計算**以消除此失真。詳見 [`scoring-model.md`](scoring-model.md) 基本面段落。
