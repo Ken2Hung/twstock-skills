@@ -92,11 +92,11 @@ class FinmindFetcher:
         """日K降級至 yfinance。需先由 TaiwanStockInfo 定市場別組 ticker。"""
         mkt = self._market_type(stock_id)
         suffix = {"twse": ".TW", "tpex": ".TWO"}.get(mkt)
-        # ponytail: emerging(興櫃) 不在 .TW/.TWO 範圍 → suffix None → 落 data_gaps（安全）。
-        # 訊息寫「無法判斷」其實已判出 emerging；興櫃 yfinance 覆蓋不穩，暫不支援。
         if suffix is None:
-            gaps.append("market_type: 無法由 TaiwanStockInfo 判斷，yfinance ticker 未組成")
-            return None, None
+            # 已判出但非上市櫃（如 emerging 興櫃，yfinance 覆蓋不穩）vs 真的判不出，訊息分流
+            why = f"市場別為 {mkt}（非上市櫃，yfinance 未涵蓋）" if mkt else "無法由 TaiwanStockInfo 判斷"
+            gaps.append(f"market_type: {why}，yfinance ticker 未組成")
+            return None, mkt
         import yfinance as yf
 
         df = yf.download(
@@ -141,6 +141,7 @@ class FinmindFetcher:
                 try:
                     df = self._call(method, stock_id, start_date, end_date)
                     data[key] = _records(df)
+                    _add_empty_gap(gaps, f"financial.{key}", data[key])
                 except Exception as exc:  # noqa: BLE001 - 分類後決定吞或拋
                     if _is_source_failure(exc):
                         data[key] = []
@@ -151,6 +152,7 @@ class FinmindFetcher:
             try:
                 df = self._call(FINMIND_METHODS[dataset], stock_id, start_date, end_date)
                 data = _records(df)
+                _add_empty_gap(gaps, dataset, data)
             except Exception as exc:  # noqa: BLE001
                 if not _is_source_failure(exc):
                     raise
@@ -174,10 +176,13 @@ class FinmindFetcher:
 
 
 def _records(df):
-    # ponytail: 成功但空的回應記為 data:[]、不進 data_gaps（spec 未要求；空≠缺，
-    # 全標會誤報如「某日無融資券」）。若下游需分辨「無資料」vs「無變化」（如 financial
-    # 的 balance_sheet 回 0 筆），開 change 加 empty→gap 規則。
     return json.loads(df.to_json(orient="records", date_format="iso"))
+
+
+def _add_empty_gap(gaps, label, records):
+    """整體 0 筆的成功回應標入 data_gaps（成功但空 ≠ 缺欄位；只標整體空，不逐欄）。"""
+    if not records:
+        gaps.append(f"{label}: 空結果(0 筆)")
 
 
 def _reason(exc):
@@ -212,6 +217,11 @@ def _selftest():
     assert _is_source_failure(Exception("Requests reach the upper limit"))
     assert _is_source_failure(Exception("read timed out"))
     assert not _is_source_failure(Exception("KeyError: foo"))
+    g = []
+    _add_empty_gap(g, "balance_sheet", [])
+    assert g == ["balance_sheet: 空結果(0 筆)"], g
+    _add_empty_gap(g, "daily", [{"x": 1}])
+    assert g == ["balance_sheet: 空結果(0 筆)"], g  # 有資料不加
     print("selftest OK")
 
 
