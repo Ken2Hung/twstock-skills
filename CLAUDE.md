@@ -8,14 +8,14 @@
 
 ## 兩層 Skill 架構（核心設計約束）
 
-採「業務模組 → 企業場景」分層，**場景不得直接呼叫 FinMind API**，必須委派模組取數。模組與場景為 N:M 重用關係。
+採「業務模組 → 企業場景」分層，**場景不得直接呼叫 FinMind API**，必須委派模組取得資料。模組與場景為 N:M 重用關係。
 
 | 層級 | 類型 | 職責 | 禁止事項 |
 |---|---|---|---|
-| L2 業務模組 | 組合型 | 封裝資料源取數、回傳結構化 JSON | 不做分析判讀、不排版報告 |
-| L3 企業場景 | 編排型 | 委派模組取數 → 分析 → 決策看板呈現 | 不自己碰 API、不寫取數邏輯 |
+| L2 業務模組 | 組合型 | 封裝資料源的取資料能力、回傳結構化 JSON | 不做分析判讀、不排版報告 |
+| L3 企業場景 | 編排型 | 委派模組取得資料 → 分析 → 決策看板呈現 | 不自己碰 API、不寫取資料邏輯 |
 
-新增功能時先判斷歸屬：純取數能力 → 加進 `twstock-module`；面向使用者的分析流程 → 開新的 L3 場景 skill。**不要把取數邏輯寫進場景層**，這會破壞分層存在原則。
+新增功能時先判斷歸屬：純取資料能力 → 加進 `twstock-module`；面向使用者的分析流程 → 開新的 L3 場景 skill。**不要把取資料邏輯寫進場景層**，這會破壞分層存在原則。
 
 ## 目錄結構
 
@@ -67,7 +67,7 @@ FinMind（主）→ TWSE/TPEx 官方開放資料（法人、處置股）→ yfin
 | TWSE / TPEx | 未明文，經驗值 | 每次 request 間隔 ≥ 1 秒，禁止並發轟炸 |
 | yfinance | ~2000 req/hr | 僅作 fallback，台股報價延遲 20 分鐘需在輸出標註 |
 
-批量取數（如全市場篩選）必須實作節流與快取，避免觸發封鎖。
+批量取資料（如全市場篩選）必須實作節流與快取，避免觸發封鎖。
 
 ### 市場別判斷
 
@@ -109,7 +109,7 @@ L3 場景輸出遵循固定看板結構：
 # 依賴安裝
 pip install FinMind pandas
 
-# 取數腳本單測（不經過 Claude）
+# 取資料腳本單測（不經過 Claude）
 python -X utf8 twstock-module/scripts/finmind_fetcher.py --stock-id 2330 --dataset daily
 
 # Skill 本機安裝驗證
@@ -133,7 +133,7 @@ cp -R twstock-module ~/.claude/skills/ && cp -R twstock-screening-stocks ~/.clau
 
 ### 衝突裁決（優先序，由高到低）
 
-1. **紅線 > 一切**：本文件「紅線」與 `openspec/project.md` 的禁令，任何工具都不得推翻
+1. **紅線 > 一切**：本文件「紅線」與 `openspec/project.md` 的禁令，任何工具都不得推翻（OpenSpec 1.5.0 起專案 context 落在 `openspec/config.yaml` 的 `context:` 鍵，但單一真相來源仍是 `openspec/project.md`；config.yaml 僅放指針＋最關鍵三條冗餘紅線）
 2. **Spec > Ponytail**：`openspec/specs/` 已 archive 的 requirement 定義了「必要」。Ponytail 不得以 YAGNI 為由砍掉 spec 明列的行為——降級鏈、data_gaps 標註、rate limit 節流、免責聲明都是 spec 要求，不是過度工程
 3. **Ponytail > 實作慣性**：spec 未明列的東西一律不建。具體到本專案：
    - FinMind 官方 SDK 已有 `DataLoader`，禁止自建 requests 封裝層（階梯 5）
@@ -175,11 +175,11 @@ npm install -g @fission-ai/openspec && openspec init   # 選 Claude Code
 | 上游 | GitHub 來源 | 本專案取用 | 注意 |
 |---|---|---|---|
 | daily_stock_analysis | https://github.com/ZhuLinsen/daily_stock_analysis | 決策看板格式、資料源降級鏈設計 | 其台股僅走 yfinance offshore 路徑，資料深度不足，勿直接沿用其台股 data provider |
-| Stock-Analysis-Skill | https://github.com/liusai0820/Stock-Analysis-Skill | SKILL.md + scripts + references 封裝結構 | 其資料源為 A 股（Tushare），僅參考結構不參考取數 |
+| Stock-Analysis-Skill | https://github.com/liusai0820/Stock-Analysis-Skill | SKILL.md + scripts + references 封裝結構 | 其資料源為 A 股（Tushare），僅參考結構不參考其取資料方式 |
 | claude-trading-skills | https://github.com/tradermonty/claude-trading-skills | 選股方法論 skill 化寫法、多 skill 工作流 | 美股語境（FMP/FinViz API），方法論可移植、API 不可 |
 | stock-strategies-only | https://github.com/kevin801221/stock-strategies-only | 台股評分模型、FinMind 串接實戰、交易成本模型 | 個人專案，串接細節自行驗證後再採用 |
 | FinMind | https://github.com/FinMind/FinMind | 主要資料層（75+ 台股資料集） | 注意 rate limit，見「資料層規範」 |
-| twstock | https://github.com/mlouielu/twstock | 台股證券編碼慣例參考 | 僅參考編碼規則，取數以 FinMind 為主 |
+| twstock | https://github.com/mlouielu/twstock | 台股證券編碼慣例參考 | 僅參考編碼規則，取資料以 FinMind 為主 |
 
 ## 紅線（絕對禁止）
 

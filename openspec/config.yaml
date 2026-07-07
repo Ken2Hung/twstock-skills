@@ -1,20 +1,14 @@
 schema: spec-driven
 
-# Project context (optional)
-# This is shown to AI when creating artifacts.
-# Add your tech stack, conventions, style guides, domain knowledge, etc.
-# Example:
-#   context: |
-#     Tech stack: TypeScript, React, Node.js
-#     We use conventional commits
-#     Domain: e-commerce platform
+# 專案 context（OpenSpec 1.5.0 起，context 放這裡，取代舊版 openspec/project.md）
+# 單一真相來源仍是 openspec/project.md；此處僅放指針 + 最關鍵冗餘紅線，
+# 以防指針被忽略。完整治理內容請讀 project.md 與 repo 根目錄 CLAUDE.md。
+context: |
+  執行任何 /opsx 工作流前，必須先完整閱讀 openspec/project.md 與 repo 根目錄
+  CLAUDE.md。其中的紅線清單與四級衝突裁決優先序（紅線 > Spec > Ponytail >
+  實作慣性）對所有 change 具強制力。
 
-# Per-artifact rules (optional)
-# Add custom rules for specific artifacts.
-# Example:
-#   rules:
-#     proposal:
-#       - Keep proposals under 500 words
-#       - Always include a "Non-goals" section
-#     tasks:
-#       - Break tasks into chunks of max 2 hours
+  最關鍵三條紅線（冗餘於此，違反即擋下）：
+  - L3 場景不得直接呼叫資料源 API，必須委派 twstock-module
+  - data_gaps 存在時禁止腦補或以舊資料填充
+  - 禁止引入外部 LLM API 依賴（OpenAI / Gemini / LiteLLM 等）

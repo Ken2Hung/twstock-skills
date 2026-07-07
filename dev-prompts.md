@@ -6,6 +6,8 @@
 
 ## Prompt 0：初始化後填 project.md
 
+> ⚠️ OpenSpec 1.5.0 機制：`openspec init --tools claude` 只產生 `openspec/config.yaml`（context 放 `context:` 鍵），**不再自動產生 `openspec/project.md`**。本專案約定：`project.md` 為 context 的單一真相來源，`config.yaml` 的 `context:` 只放「先讀 project.md + CLAUDE.md」指針與最關鍵三條冗餘紅線，不全文鏡射。
+
 ```
 讀取 repo 根目錄的 CLAUDE.md，據此填寫 openspec/project.md。必須包含：
 
@@ -19,7 +21,7 @@
 
 ---
 
-## Change 1：`add-finmind-fetcher`（L2 取數地基）
+## Change 1：`add-finmind-fetcher`（L2 取資料地基）
 
 ### Propose
 
@@ -29,7 +31,7 @@
 建立 twstock-module（L2 業務模組）：SKILL.md + scripts/finmind_fetcher.py。
 
 範圍（spec 必須逐條寫成 requirement + scenario）：
-1. 取數能力：日K、PER/PBR、三大法人買賣超、融資融券、月營收、財報三表，輸入 stock_id + 日期區間，輸出結構化 JSON（含 source、fetched_at、data_gaps 欄位）
+1. 取資料能力：日K、PER/PBR、三大法人買賣超、融資融券、月營收、財報三表，輸入 stock_id + 日期區間，輸出結構化 JSON（含 source、fetched_at、data_gaps 欄位）
 2. 降級鏈：FinMind → yfinance（僅日K可降級）。FinMind 回 402/429 或逾時，降級並在 data_gaps 列出 yfinance 無法提供的欄位。scenario 要寫 Given/When/Then
 3. Rate limit：讀環境變數 FINMIND_TOKEN；無 token 300 req/hr、有 token 600 req/hr；請求間隔節流用 time.sleep
 4. 市場別：上市 .TW / 上櫃 .TWO，以 FinMind TaiwanStockInfo 判斷，禁止硬編碼股票清單
@@ -94,7 +96,7 @@ spec 重點：所有涉及損益計算的下游能力 SHALL 引用 tw-market-rul
 建立 twstock-screening-stocks 的 SKILL.md（L3 企業場景，編排型）。
 
 spec 必寫 requirement：
-1. 編排行為：解析使用者自然語言選股條件 → 委派 twstock-module 取數 → 套用篩選 → 輸出決策看板。SHALL NOT 直接呼叫 FinMind/yfinance（寫成 scenario：WHEN 場景需要日K資料 THEN 呼叫 twstock-module 而非任何 API）
+1. 編排行為：解析使用者自然語言選股條件 → 委派 twstock-module 取得資料 → 套用篩選 → 輸出決策看板。SHALL NOT 直接呼叫 FinMind/yfinance（寫成 scenario：WHEN 場景需要日K資料 THEN 呼叫 twstock-module 而非任何 API）
 2. 看板輸出格式固定：評分(0-100)｜信號｜目標價｜止損價｜核心理由(≤3點)｜風險提示｜data_gaps
 3. data_gaps 非空時，看板 SHALL 明示「以下判讀基於不完整資料」
 4. 每檔標的必附免責聲明
@@ -131,7 +133,7 @@ spec 必寫 requirement：
 /opsx:propose add-scoring-model
 
 依剛才 explore 的結論建立評分模型。spec 必寫：
-1. 權重與各面向指標定義（含資料來源對應 twstock-module 的哪個取數能力）
+1. 權重與各面向指標定義（含資料來源對應 twstock-module 的哪個取資料能力）
 2. 任一面向因 data_gaps 缺資料時的降權重算規則（SHALL 重新正規化剩餘面向，SHALL NOT 以預設值填充缺失面向）
 3. 損益相關計算 SHALL 引用 tw-market-rules.md 的交易成本
 4. 權重定義集中在單一檔案，調整權重不需改動選股流程
