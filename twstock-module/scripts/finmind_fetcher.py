@@ -89,6 +89,8 @@ class FinmindFetcher:
         """日K降級至 yfinance。需先由 TaiwanStockInfo 定市場別組 ticker。"""
         mkt = self._market_type(stock_id)
         suffix = {"twse": ".TW", "tpex": ".TWO"}.get(mkt)
+        # ponytail: emerging(興櫃) 不在 .TW/.TWO 範圍 → suffix None → 落 data_gaps（安全）。
+        # 訊息寫「無法判斷」其實已判出 emerging；興櫃 yfinance 覆蓋不穩，暫不支援。
         if suffix is None:
             gaps.append("market_type: 無法由 TaiwanStockInfo 判斷，yfinance ticker 未組成")
             return None, None
@@ -150,6 +152,9 @@ class FinmindFetcher:
 
 
 def _records(df):
+    # ponytail: 成功但空的回應記為 data:[]、不進 data_gaps（spec 未要求；空≠缺，
+    # 全標會誤報如「某日無融資券」）。若下游需分辨「無資料」vs「無變化」（如 financial
+    # 的 balance_sheet 回 0 筆），開 change 加 empty→gap 規則。
     return json.loads(df.to_json(orient="records", date_format="iso"))
 
 
