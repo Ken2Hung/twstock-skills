@@ -28,7 +28,10 @@ FINANCIAL_METHODS = {
     "balance_sheet": "taiwan_stock_balance_sheet",
     "cash_flows": "taiwan_stock_cash_flows_statement",
 }
-DATASETS = list(FINMIND_METHODS) + ["financial"]
+# 集保戶股權分散走 TDCC 官方開放資料（免費，非 FinMind 端點）。id=1-5 為全市場
+# 最新週結快照，無歷史區間；含各持股分級人數/股數/占比（分級 15 = 大戶）。
+TDCC_SHAREHOLDING_URL = "https://opendata.tdcc.com.tw/getOD.ashx?id=1-5"
+DATASETS = list(FINMIND_METHODS) + ["financial", "shareholding"]
 
 
 def _is_source_failure(exc):
@@ -109,11 +112,30 @@ class FinmindFetcher:
         ]
         return json.loads(df.to_json(orient="records", date_format="iso")), mkt
 
+    def _tdcc_shareholding(self, stock_id, gaps):
+        """集保戶股權分散：TDCC 官方開放資料（免費），非 FinMind 端點。
+        id=1-5 為全市場最新週結快照（無歷史區間），過濾單檔回各持股分級原始列。
+        任何取數失敗 fail-open 進 data_gaps，不中斷主鏈路。"""
+        import pandas as pd
+
+        try:
+            df = pd.read_csv(TDCC_SHAREHOLDING_URL, dtype=str)
+        except Exception as exc:  # noqa: BLE001 - 外部開放資料失效一律 fail-open
+            gaps.append(f"shareholding: TDCC 開放資料取不到（{str(exc)[:60]}）")
+            return [], "none"
+        rows = df[df["證券代號"].str.strip() == stock_id]
+        if rows.empty:
+            gaps.append("shareholding: TDCC 查無此證券（僅上市櫃集保股權分散）")
+            return [], "none"
+        return json.loads(rows.to_json(orient="records", force_ascii=False)), "TDCC"
+
     def fetch(self, stock_id, dataset, start_date, end_date):
         gaps = []
         market = None
         source = "FinMind"
-        if dataset == "financial":
+        if dataset == "shareholding":
+            data, source = self._tdcc_shareholding(stock_id, gaps)
+        elif dataset == "financial":
             data = {}
             for key, method in FINANCIAL_METHODS.items():
                 try:

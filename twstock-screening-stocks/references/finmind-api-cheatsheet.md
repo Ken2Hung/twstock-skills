@@ -1,8 +1,9 @@
-# FinMind 資料集速查（本專案用到的 6 種）
+# 資料集速查（本專案用到的 7 種：6 FinMind + 1 TDCC）
 
 > 方法名與 dataset key 對齊 `twstock-module/scripts/finmind_fetcher.py`（`FINMIND_METHODS` / `FINANCIAL_METHODS`）。
 > 欄位取自實際回傳（2330 實測）。透過 `twstock-module` 取用，**L3 場景不得直接呼叫**。
 > 共通參數：`stock_id`、`start_date`、`end_date`（`YYYY-MM-DD`）。共通欄位：`date`、`stock_id`。
+> 例外：`shareholding` 源自 **TDCC 官方開放資料**（非 FinMind），不吃日期區間，欄位為中文，見下方專節。
 
 ## daily — 日K
 
@@ -37,6 +38,14 @@
 - **欄位**：`country`、`revenue`（當月營收）、`revenue_month`、`revenue_year`、`create_time`
 - **註**：YoY 年增率須自行以 `revenue` 對去年同月計算（FinMind 不直接給 YoY）。
 - **範例**：`--stock-id 2330 --dataset revenue ...`
+
+## shareholding — 集保戶股權分散（TDCC 開放資料，非 FinMind）
+
+- **來源**：TDCC 集保結算所開放資料 `https://opendata.tdcc.com.tw/getOD.ashx?id=1-5`（免費，避開 FinMind 付費層）。`twstock-module` 直接讀 CSV、過濾單檔（`證券代號` 有空白 padding，比對前 strip）。
+- **欄位（中文，實測 2330）**：`資料日期`（YYYYMMDD）、`證券代號`、`持股分級`（`1`~`17`）、`人數`、`股數`、`占集保庫存數比例%`
+- **持股分級對照**：`1`=1–999 股、`2`=1,000–5,000…遞增至 `14`=800,001–1,000,000、**`15`=1,000,001 股以上（大戶）**、`16`=差異數調整、`17`=合計。籌碼面「大戶持股」= 追蹤分級 `15` 的 `占集保庫存數比例%`。
+- **註**：**僅最新一週快照**（`id=1-5` 無歷史區間），`start_date`/`end_date` 不適用；取數失敗或查無證券 → fail-open 進 `data_gaps`、`source: none`。
+- **範例**：`--stock-id 2330 --dataset shareholding`（日期參數會被忽略）
 
 ## financial — 財報三表（組合資料集）
 
