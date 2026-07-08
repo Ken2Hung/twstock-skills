@@ -29,10 +29,16 @@
 - **WHEN** 檢視 `finmind-api-cheatsheet.md`
 - **THEN** MUST 含 daily／per_pbr／institutional／margin／revenue／financial 六項，每項列出方法名、關鍵欄位、參數與範例，且方法名與 `twstock-module/scripts/finmind_fetcher.py` 一致
 
-### Requirement: 策略 preset 骨架
+### Requirement: 策略 preset 定義
 
-`strategy-presets.md` SHALL 提供五個策略 preset 的空骨架模板：動能、價值、成長、高股息、法人籌碼。每個 preset SHALL 採一致的模板欄位（名稱、面向權重、門檻、所需資料集），內容留待 v0.2 填寫，本 change 不寫實際策略邏輯或門檻值。
+`strategy-presets.md` SHALL 定義五個策略 preset：動能、價值、成長、高股息、法人籌碼。每個 preset MUST 含：面向權重覆寫（基本面／技術面／籌碼面，加總 100%）、3~5 個強調指標（含對應 twstock-module dataset 與方向語意）、所需 dataset、一句 rationale。強調指標之算法定義 SHALL 以 `scoring-model.md` 為準（preset SHALL NOT 另定義指標細節）；強調指標為 soft 連續評分，SHALL NOT 為硬門檻。
 
-#### Scenario: 五 preset 骨架齊備且標註待填
+#### Scenario: 五 preset 皆完整定義
+
 - **WHEN** 檢視 `strategy-presets.md`
-- **THEN** MUST 含動能／價值／成長／高股息／法人籌碼五個 preset，每個具一致模板欄位，且明確標註內容為 v0.2 待填（骨架不含實際門檻值）
+- **THEN** MUST 含動能／價值／成長／高股息／法人籌碼五 preset，每個具面向權重（加總 100）、強調指標（含 dataset 與方向）、所需 dataset
+
+#### Scenario: 指標引用 scoring-model 不另定義
+
+- **WHEN** preset 指定某強調指標
+- **THEN** 指標算法 MUST 引用 `scoring-model.md`，SHALL NOT 於 preset 內重新定義指標細節
