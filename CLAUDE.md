@@ -20,23 +20,27 @@
 ## 目錄結構
 
 ```
-twstock-skills/
-├── README.md                        # 使用者文件（不含架構細節）
-├── CLAUDE.md                        # 本文件
-├── LICENSE                          # AGPL-3.0
-├── twstock-module/                  # L2 業務模組
-│   ├── SKILL.md
-│   └── scripts/
-│       └── finmind_fetcher.py       # FinMind API 封裝（唯一允許碰 API 的地方）
-├── twstock-screening-stocks/        # L3 企業場景：多策略選股
-│   ├── SKILL.md
-│   └── references/
-│       ├── strategy-presets.md      # 策略知識庫
-│       ├── tw-market-rules.md       # 台股市場規則
-│       └── finmind-api-cheatsheet.md# FinMind 資料集速查（源自官方 llms.txt）
-└── twstock-reviewing-portfolio/     # L3 企業場景：持股健檢（規劃中）
-    └── SKILL.md
+twstock-skills/                          # repo = Claude Code plugin + marketplace
+├── .claude-plugin/
+│   ├── plugin.json                      # plugin manifest（name/version/…）
+│   └── marketplace.json                 # 分發：/plugin marketplace add
+├── skills/                              # 6 支 skill（plugin 自動發現；手動安裝亦從此複製）
+│   ├── twstock-module/                  # L2 業務模組（唯一允許碰資料源 API）
+│   │   └── scripts/finmind_fetcher.py
+│   ├── twstock-screening-stocks/        # L3 場景：多策略選股
+│   │   └── references/                  # tw-market-rules / scoring-model / strategy-presets / finmind-api-cheatsheet
+│   ├── twstock-reviewing-portfolio/     # L3 場景：持股健檢
+│   ├── twstock-backtesting/             # L3+引擎：歷史回測（單檔/等權投組）
+│   │   └── scripts/backtest.py
+│   ├── twstock-notifying-line/          # 輸出模組：LINE Messaging API 推播
+│   │   └── scripts/line_push.py
+│   └── twstock-notifying-dailypicks/    # L3 場景：每日選股推播
+│       └── scripts/daily_screen.py
+├── openspec/                            # spec-driven 治理（specs/ 真相 + changes/）
+├── README.md · CLAUDE.md · LICENSE
 ```
+
+> 跨 skill 的相對 import（`../../<skill>/scripts`）在 `skills/` 同層下成立；手動安裝（複製到 `~/.claude/skills/`）與 plugin 安裝（快取於 `<cache>/skills/`）兩種佈局皆保持同層兄弟，import 不變。
 
 ## 命名規範
 
@@ -110,10 +114,10 @@ L3 場景輸出遵循固定看板結構：
 pip install FinMind pandas
 
 # 取資料腳本單測（不經過 Claude）
-python -X utf8 twstock-module/scripts/finmind_fetcher.py --stock-id 2330 --dataset daily
+python -X utf8 skills/twstock-module/scripts/finmind_fetcher.py --stock-id 2330 --dataset daily
 
-# Skill 本機安裝驗證
-cp -R twstock-module ~/.claude/skills/ && cp -R twstock-screening-stocks ~/.claude/skills/
+# Skill 本機安裝驗證（手動；或 plugin：/plugin install twstock@twstock-skills）
+cp -R skills/twstock-* ~/.claude/skills/
 ```
 
 - Python 腳本一律以 `-X utf8` 執行（繁中欄位名避免編碼問題）

@@ -1,0 +1,15 @@
+{
+  "name": "twstock-skills",
+  "description": "台股 AI Skills 官方分發",
+  "owner": "Ken2Hung",
+  "plugins": [
+    {
+      "name": "twstock",
+      "source": {
+        "type": "git",
+        "url": "https://github.com/Ken2Hung/twstock-skills.git",
+        "ref": "main"
+      }
+    }
+  ]
+}

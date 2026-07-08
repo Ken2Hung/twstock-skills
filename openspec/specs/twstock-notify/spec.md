@@ -4,7 +4,7 @@
 
 訊息推播模組（輸出/side-effect 能力）：透過 LINE Messaging API 將文字訊息推播至指定對象，
 供每日自動選股等場景委派通知。憑證從環境變數讀、不外洩；推播失敗 fail-safe、不中斷呼叫端。
-零 pip 依賴（stdlib urllib）。實作於 twstock-notifying-line/scripts/line_push.py。
+零 pip 依賴（stdlib urllib）。實作於 skills/twstock-notifying-line/scripts/line_push.py。
 
 ## Requirements
 

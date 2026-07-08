@@ -1,0 +1,11 @@
+{
+  "name": "twstock",
+  "description": "台股選股 AI Skills：資料層封裝 FinMind、分析由 Claude 本體執行——多策略選股、持股健檢、含台股交易成本的歷史回測（單檔/投組）、每日選股 LINE 推播。無外部 LLM API 依賴。",
+  "version": "2.0.0-alpha.1",
+  "author": {
+    "name": "Ken2Hung"
+  },
+  "homepage": "https://github.com/Ken2Hung/twstock-skills",
+  "repository": "https://github.com/Ken2Hung/twstock-skills",
+  "license": "AGPL-3.0"
+}

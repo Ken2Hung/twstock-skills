@@ -59,7 +59,7 @@
 /ponytail-review
 
 對本次 diff 出 delete-list。處理完後執行：
-python -X utf8 twstock-module/scripts/finmind_fetcher.py --stock-id 2330 --dataset daily
+python -X utf8 skills/twstock-module/scripts/finmind_fetcher.py --stock-id 2330 --dataset daily
 並逐條核對 specs 裡每個 scenario 的 WHEN/THEN 是否成立，給我核對表。
 ```
 
@@ -76,7 +76,7 @@ python -X utf8 twstock-module/scripts/finmind_fetcher.py --stock-id 2330 --datas
 ```
 /opsx:propose add-tw-market-rules
 
-建立 twstock-screening-stocks/references/ 三份知識文件（本 change 無程式碼）：
+建立 skills/twstock-screening-stocks/references/ 三份知識文件（本 change 無程式碼）：
 1. tw-market-rules.md：交易成本（買 0.1425% / 賣 0.4425% 含證交稅）、漲跌停 ±10%、處置股警示規則、上市/上櫃市場別
 2. finmind-api-cheatsheet.md：從 FinMind 官方 llms.txt 萃取本專案用到的資料集速查（欄位名、參數、範例）
 3. strategy-presets.md：先建骨架（動能/價值/成長/高股息/法人籌碼五個 preset 的空模板），內容留待 v0.2

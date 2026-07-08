@@ -4,7 +4,7 @@
 
 台股在地化規則與 FinMind 資料集的知識基準層：交易成本／漲跌停／處置股／市場別為下游損益計算的
 單一真相來源，外加資料集速查與策略 preset 骨架。實體文件位於
-`twstock-screening-stocks/references/`。
+`skills/twstock-screening-stocks/references/`。
 
 ## Requirements
 
@@ -13,7 +13,7 @@
 `tw-market-rules.md` SHALL 定義台股在地化規則作為下游損益計算的單一真相來源，至少含：買進成本 0.1425%（手續費）、賣出成本 0.4425%（手續費 0.1425% + 證交稅 0.3%）、漲跌停 ±10%、處置股警示規則、上市（`.TW`）／上櫃（`.TWO`）市場別。所有涉及損益計算的下游能力 SHALL 引用本文件的成本參數，SHALL NOT 在程式碼中散落魔術數字。
 
 #### Scenario: 成本與規則參數齊備
-- **WHEN** 檢視 `twstock-screening-stocks/references/tw-market-rules.md`
+- **WHEN** 檢視 `skills/twstock-screening-stocks/references/tw-market-rules.md`
 - **THEN** MUST 含買進 0.1425%、賣出 0.4425%（明列含證交稅 0.3%）、漲跌停 ±10%、處置股警示、上市/上櫃市場別
 
 #### Scenario: 下游引用單一成本來源
@@ -27,7 +27,7 @@
 
 #### Scenario: 速查涵蓋六資料集且與實作一致
 - **WHEN** 檢視 `finmind-api-cheatsheet.md`
-- **THEN** MUST 含 daily／per_pbr／institutional／margin／revenue／financial 六項，每項列出方法名、關鍵欄位、參數與範例，且方法名與 `twstock-module/scripts/finmind_fetcher.py` 一致
+- **THEN** MUST 含 daily／per_pbr／institutional／margin／revenue／financial 六項，每項列出方法名、關鍵欄位、參數與範例，且方法名與 `skills/twstock-module/scripts/finmind_fetcher.py` 一致
 
 ### Requirement: 策略 preset 定義
 

@@ -4,14 +4,14 @@
 
 台股選股評分模型的知識層單一真相來源：綜合權重（基本面 30% / 技術面 30% / 籌碼面 40%）與
 三面向指標定義（方向語意、回看窗口、量化門檻、對應 twstock-module dataset），以及缺面向降權重
-正規化規則與 v1.0 long-only 假設。實體文件位於 twstock-screening-stocks/references/scoring-model.md，
+正規化規則與 v1.0 long-only 假設。實體文件位於 skills/twstock-screening-stocks/references/scoring-model.md，
 由 twstock-screening-orchestration 消費。調整權重只改此層、不動選股流程。
 
 ## Requirements
 
 ### Requirement: 綜合評分權重為單一真相來源
 
-評分模型的權重與各面向指標定義 SHALL 集中於 `twstock-screening-stocks/references/scoring-model.md` 作為單一真相來源。綜合評分 SHALL = 基本面 × 30% + 技術面 × 30% + 籌碼面 × 40%。調整任一權重 SHALL 只需修改 `scoring-model.md`，SHALL NOT 需改動 `twstock-screening-stocks` 的選股編排流程。各面向指標 MUST 於 `scoring-model.md` 標明對應之 twstock-module dataset。
+評分模型的權重與各面向指標定義 SHALL 集中於 `skills/twstock-screening-stocks/references/scoring-model.md` 作為單一真相來源。綜合評分 SHALL = 基本面 × 30% + 技術面 × 30% + 籌碼面 × 40%。調整任一權重 SHALL 只需修改 `scoring-model.md`，SHALL NOT 需改動 `twstock-screening-stocks` 的選股編排流程。各面向指標 MUST 於 `scoring-model.md` 標明對應之 twstock-module dataset。
 
 #### Scenario: 權重與指標集中於單一檔案
 

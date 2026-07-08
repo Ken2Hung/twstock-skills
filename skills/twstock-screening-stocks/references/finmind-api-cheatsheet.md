@@ -1,6 +1,6 @@
 # 資料集速查（本專案用到的 7 種：6 FinMind + 1 TDCC）
 
-> 方法名與 dataset key 對齊 `twstock-module/scripts/finmind_fetcher.py`（`FINMIND_METHODS` / `FINANCIAL_METHODS`）。
+> 方法名與 dataset key 對齊 `skills/twstock-module/scripts/finmind_fetcher.py`（`FINMIND_METHODS` / `FINANCIAL_METHODS`）。
 > 欄位取自實際回傳（2330 實測）。透過 `twstock-module` 取用，**L3 場景不得直接呼叫**。
 > 共通參數：`stock_id`、`start_date`、`end_date`（`YYYY-MM-DD`）。共通欄位：`date`、`stock_id`。
 > 例外：`shareholding` 源自 **TDCC 官方開放資料**（非 FinMind），不吃日期區間，欄位為中文，見下方專節。
