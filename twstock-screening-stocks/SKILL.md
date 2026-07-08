@@ -70,6 +70,8 @@ description: >-
 
 綜合評分 = **基本面 30% × 技術面 30% × 籌碼面 40%**。權重與各面向指標定義（方向語意、回看窗口、資料來源）以 [`references/scoring-model.md`](references/scoring-model.md) 為**單一真相來源**——調權重只改該檔、不動本流程。任一面向因 `data_gaps` 缺資料時，依 scoring-model.md **重新正規化**剩餘面向，**不以預設值填充**。
 
+**策略 preset**：使用者指名策略（如「用高股息策略挑…」）時，套用 [`references/strategy-presets.md`](references/strategy-presets.md) 該 preset 的**面向權重覆寫**與強調指標；未指名則用預設 30/30/40。指標算法仍以 scoring-model.md 為準。
+
 ## 8. 目標價、止損價與風險 overlay
 
 - **價位以市場價（新台幣元）呈現**，供**觸價判定**；**交易成本不扣進價位**。v1.0 **long-only**（信號賣出／觀望 = 不建議買進／退出，非做空）下滿足 **止損價 ≤ 現價 ≤ 目標價**。
